@@ -1,0 +1,61 @@
+{
+     "button":
+     {
+         "colours":
+         {
+             "normal_bg": "#F2F3F3",
+             "hovered_bg": "#BDBEBE",
+             "disabled_bg": "#898989",
+             "selected_bg": "#BDBEBE",
+             "active_bg": "#545454",
+             "normal_text": "#353535",
+             "hovered_text": "#1F1F1F",
+             "selected_text": "#1F1F1F",
+             "disabled_text": "#d2d2d2",
+             "active_text": "#080808",
+             "normal_border": "#121212",
+             "hovered_border": "#1F1F1F",
+             "disabled_border": "#1F1F1F",
+             "selected_border": "#1F1F1F",
+             "active_border": "#1F1F1F"
+         },
+         "font":
+         {
+             "name": "montserrat",
+             "size": "24",
+             "bold": "1",
+             "italic": "0",
+             "regular_resource": {
+                  "package": "data.fonts",
+                  "resource": "Montserrat-Regular.ttf"
+             },
+             "bold_resource": {
+                  "package": "data.fonts",
+                  "resource": "Montserrat-Bold.ttf"
+             },
+             "italic_resource": {
+                  "package": "data.fonts",
+                  "resource": "Montserrat-Italic.ttf"
+             },
+             "bold_italic_resource": {
+                  "package": "data.fonts",
+                  "resource": "Montserrat-BoldItalic.ttf"
+             }
+         },
+         "misc":
+         {
+             "border_width": "1",
+             "shadow_width": "1",
+             "tool_tip_delay": "1.0",
+             "text_horiz_alignment": "center",
+             "text_vert_alignment": "center",
+             "text_horiz_alignment_padding": "10",
+             "text_vert_alignment_padding": "5",
+             "state_transitions":
+             {
+                 "normal_hovered": "0.5",
+                 "hovered_normal": "0.5"
+             }
+         }
+     }
+ }
