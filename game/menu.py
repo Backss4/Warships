@@ -2,16 +2,18 @@ import sys
 import pygame
 import pygame_gui
 from game.constants import MenuState, PlayOption
+from game.utils import W, H
 
 
 class Menu:
     def __init__(self, game_manager):
         self.__m = game_manager
         self.surface = self.__m.surface
-        self.running = self.__m.menu_running
+        self.running = True
         self.state = MenuState.MAIN
-        self.__background = pygame.transform.scale(pygame.image.load('new_bg.jpg'), self.surface.get_size())
-        self.main_menu = MainMenu(self)
+        self.__background = pygame.transform.scale(pygame.image.load('new_bg_4.jpeg'), self.surface.get_size())
+        self.logo = pygame.image.load('logo4.png')
+        self.main_menu = MainMenu(self, self.__m)
         self.options_menu = OptionsMenu(self)
 
     def handle_events(self):
@@ -47,30 +49,35 @@ class Menu:
 
 
 class MainMenu:
-    def __init__(self, menu):
+    def __init__(self, menu, game_manager):
         self.__menu = menu
         self.__surface = self.__menu.surface
         self.__uimanager = pygame_gui.UIManager(self.__surface.get_size(), 'data/themes/menu.json')
-        self.menu = menu
-        self.surface = self.menu.surface
+        self.__m = game_manager
+        self.surface = self.__menu.surface
+        self.logo = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect((self.surface.get_width() // 2 - 320, self.surface.get_height() // 2 - 450),
+                                      (W(700), H(364))),
+            manager=self.__uimanager,
+            image_surface=self.__menu.logo)
         self.make_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2 - 50),
-                                      (250, 50)),
+                                      (W(250), 50)),
             text='Utwórz nową grę',
             manager=self.__uimanager)
         self.join_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2),
-                                      (250, 50)),
+                                      (W(250), 50)),
             text='Dołącz do gry',
             manager=self.__uimanager)
         self.options_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2 + 50),
-                                      (250, 50)),
+                                      (W(250), 50)),
             text='Opcje',
             manager=self.__uimanager)
         self.quit_game_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2 + 100),
-                                      (250, 50)),
+                                      (W(250), 50)),
             text='Wyjdź z gry',
             manager=self.__uimanager)
 
@@ -82,11 +89,11 @@ class MainMenu:
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == self.make_game_button:
-                        pass
+                        self.__m.game_start(PlayOption.CREATE)
                     elif event.ui_element == self.join_game_button:
-                        pass
+                        self.__m.game_start(PlayOption.JOIN)
                     elif event.ui_element == self.options_game_button:
-                        self.menu.state = MenuState.OPTIONS
+                        self.__menu.state = MenuState.OPTIONS
                     else:
                         sys.exit()
             self.__uimanager.process_events(event)
@@ -105,21 +112,6 @@ class OptionsMenu:
         self.__uimanager = pygame_gui.UIManager(self.__surface.get_size(), 'data/themes/menu.json')
         self.menu = menu
         self.surface = self.menu.surface
-        '''self.make_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2 - 50),
-                                      (250, 50)),
-            text='Utwórz nową grę',
-            manager=self.__uimanager)
-        self.join_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2),
-                                      (250, 50)),
-            text='Dołącz do gry',
-            manager=self.__uimanager)
-        self.options_game_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2 + 50),
-                                      (250, 50)),
-            text='Opcje',
-            manager=self.__uimanager)'''
         self.go_back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2 + 100),
                                       (250, 50)),

@@ -21,4 +21,5 @@ class MenuState:
 
 class PlayOption:
     CREATE = 0,
-    JOIN = 1
+    JOIN = 1,
+    NONE = 2
