@@ -136,3 +136,60 @@ class OptionsMenu:
 
     def draw(self):
         self.__uimanager.draw_ui(self.surface)
+
+
+class AddressInputMenu:
+    def __init__(self, manager, surface):
+        self.running = False
+        self.__m = manager
+        self.__surface = surface
+        self.__uimanager = pygame_gui.UIManager(self.__surface.get_size(), 'data/themes/gameui.json')
+        self.input_line = pygame_gui.elements.UITextEntryLine(
+            relative_rect=pygame.Rect((self.__surface.get_width() / 2 - 200, 600),
+                                      (400, 50)),
+            manager=self.__uimanager,
+            object_id='#input'
+        )
+        self.send_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.__surface.get_width() / 2 - 50, 655),
+                                      (100, 42)),
+            text='Dołącz',
+            manager=self.__uimanager,
+            object_id='#send'
+        )
+
+    def handle_events(self):
+        address = None
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == self.send_button:
+                        address = self.input_line.get_text()
+                        self.running = False
+            self.__uimanager.process_events(event)
+        return address
+
+    def update(self, update_time):
+        self.__uimanager.update(update_time)
+
+    def draw(self):
+        self.__uimanager.draw_ui(self.__surface)
+
+    def run(self):
+        self.running = True
+        address = None
+        while self.running:
+            time_delta = self.__m.clock.tick(60) / 1000.0
+            address = self.handle_events()
+            self.update(time_delta)
+            self.draw()
+            pygame.display.update()
+        return address
+
+    @staticmethod
+    def get_address(manager, surface):
+        dialog = AddressInputMenu(manager, surface)
+        return dialog.run()

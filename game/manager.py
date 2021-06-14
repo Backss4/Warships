@@ -28,7 +28,6 @@ class Manager:
         self.menu_running = False
         self.game.set_mode(option)
         self.game.running = self.game_running = True
-        print('Game started')
 
     def menu_start(self):
         self.game_running = False
