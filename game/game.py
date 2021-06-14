@@ -5,7 +5,7 @@ from game.constants import PlayOption, EventTypes
 from game.utils import W, H
 from game.game_internals import board
 from game.network import server, client
-from game.menu import AddressInputMenu
+from game.menu import AddressInputMenu, ErrorMenu
 
 
 class Game:
@@ -41,7 +41,6 @@ class Game:
         )
         self.board = board.Board(125, 101, 40, 40, self.surface)
         self.enemy_board = board.Board(600, 101, 40, 40, self.surface)
-        self.__background = pygame.transform.scale(pygame.image.load('new_bg_4.jpeg'), self.surface.get_size())
         self.mode = PlayOption.NONE
         self.server = server.Server()
         self.client = client.Client()
@@ -76,7 +75,7 @@ class Game:
         self.uimanager.update(update_time)
 
     def draw(self):
-        self.surface.blit(self.__background, (0, 0))
+        self.surface.blit(self.manager.background, (0, 0))
         pygame.draw.line(self.surface, (255, 255, 255), (0, 100), (self.surface.get_width(), 100))
         self.board.draw()
         self.enemy_board.draw()
@@ -85,17 +84,25 @@ class Game:
     def set_mode(self, mode):
         if mode == PlayOption.CREATE:
             if not self.server.start():
-                pass #pokaz blad
-            if not self.client.start('localhost', 64000):
-                pass #poakz blad
+                ErrorMenu.show(self.manager, self.surface, 'Serwer nie mógł zostać uruchomiony')
+                return False
+            if not self.client.start('26.57.228.154', 64000):
+                if self.server.running:
+                    self.server.stop()
+                ErrorMenu.show(self.manager, self.surface, 'Klient nie mógł sie połączyć')
+                return False
         elif mode == PlayOption.JOIN:
             self.running = False
-            self.surface.blit(self.__background, (0, 0))
             address = AddressInputMenu.get_address(self.manager, self.surface)
-            if self.client.start():
-                self.running = True
+            if address is None or address == '':
+                ErrorMenu.show(self.manager, self.surface, 'Adres IP nie może być pusty')
+                return False
+            if not self.client.start(address, 64000):
+                ErrorMenu.show(self.manager, self.surface, 'Klient nie mógł się połączyć')
+                return False
             else:
-                pass #tutaj bedziemy pokazywac błąd
+                self.running = True
+        return True
 
     def run(self):
         while self.running:

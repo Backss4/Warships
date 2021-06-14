@@ -11,7 +11,6 @@ class Menu:
         self.surface = self.__m.surface
         self.running = True
         self.state = MenuState.MAIN
-        self.__background = pygame.transform.scale(pygame.image.load('new_bg_4.jpeg'), self.surface.get_size())
         self.logo = pygame.image.load('logo4.png')
         self.main_menu = MainMenu(self, self.__m)
         self.options_menu = OptionsMenu(self)
@@ -23,7 +22,7 @@ class Menu:
             self.options_menu.handle_events()
 
     def draw(self):
-        self.surface.blit(self.__background, (0, 0))
+        self.surface.blit(self.__m.background, (0, 0))
         if self.state == MenuState.MAIN:
             self.main_menu.draw()
         elif self.state == MenuState.OPTIONS:
@@ -151,9 +150,16 @@ class AddressInputMenu:
             object_id='#input'
         )
         self.send_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.__surface.get_width() / 2 - 50, 655),
-                                      (100, 42)),
+            relative_rect=pygame.Rect((self.__surface.get_width() / 2 + 50, 655),
+                                      (150, 42)),
             text='Dołącz',
+            manager=self.__uimanager,
+            object_id='#send'
+        )
+        self.back_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.__surface.get_width() / 2 - 200, 655),
+                                      (150, 42)),
+            text='Anuluj',
             manager=self.__uimanager,
             object_id='#send'
         )
@@ -166,6 +172,9 @@ class AddressInputMenu:
 
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == self.back_button:
+                        self.running = False
+                        self.__m.menu_start()
                     if event.ui_element == self.send_button:
                         address = self.input_line.get_text()
                         self.running = False
@@ -176,6 +185,7 @@ class AddressInputMenu:
         self.__uimanager.update(update_time)
 
     def draw(self):
+        self.__surface.blit(self.__m.background, (0, 0))
         self.__uimanager.draw_ui(self.__surface)
 
     def run(self):
@@ -192,4 +202,55 @@ class AddressInputMenu:
     @staticmethod
     def get_address(manager, surface):
         dialog = AddressInputMenu(manager, surface)
+        return dialog.run()
+
+class ErrorMenu:
+    def __init__(self, manager, surface, error):
+        self.running = False
+        self.__m = manager
+        self.__surface = surface
+        self.__uimanager = pygame_gui.UIManager(self.__surface.get_size(), 'data/themes/gameui.json')
+        font = pygame.font.SysFont(None, 48)
+        self.text = font.render(error, True, (255, 255, 255))
+        self.back_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((self.__surface.get_width() / 2 - 100, 655),
+                                      (200, 42)),
+            text='Wróć do menu',
+            manager=self.__uimanager,
+            object_id='#send'
+        )
+
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == self.back_button:
+                        self.running = False
+                        self.__m.menu_start()
+            self.__uimanager.process_events(event)
+
+    def update(self, update_time):
+        self.__uimanager.update(update_time)
+
+    def draw(self):
+        self.__surface.blit(self.__m.background, (0, 0))
+        self.__surface.blit(self.text, (self.__surface.get_width() / 2 - self.text.get_width() / 2, 600))
+        self.__uimanager.draw_ui(self.__surface)
+
+    def run(self):
+        self.running = True
+        while self.running:
+            time_delta = self.__m.clock.tick(60) / 1000.0
+            self.handle_events()
+            self.update(time_delta)
+            self.draw()
+            pygame.display.update()
+        return True
+
+    @staticmethod
+    def show(manager, surface, error):
+        dialog = ErrorMenu(manager, surface, error)
         return dialog.run()

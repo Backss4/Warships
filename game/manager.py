@@ -15,6 +15,7 @@ class Manager:
         self.surface.fill((255, 255, 255, 255))
 
         self.clock = pygame.time.Clock()
+        self.background = pygame.transform.scale(pygame.image.load('new_bg_4.jpeg'), self.surface.get_size())
 
         # Modules states
         self.game_running = False
