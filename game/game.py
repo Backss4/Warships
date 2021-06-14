@@ -83,9 +83,11 @@ class Game:
 
     def set_mode(self, mode):
         if mode == PlayOption.CREATE:
-            if not self.server.start():
+            if not self.server.start() or not self.server.start_event.wait(5):
+                print(self.server.running)
                 ErrorMenu.show(self.manager, self.surface, 'Serwer nie mógł zostać uruchomiony')
                 return False
+            print(self.server.running)
             if not self.client.start('26.57.228.154', 64000):
                 if self.server.running:
                     self.server.stop()
@@ -94,7 +96,9 @@ class Game:
         elif mode == PlayOption.JOIN:
             self.running = False
             address = AddressInputMenu.get_address(self.manager, self.surface)
-            if address is None or address == '':
+            if address is None:
+                return False
+            elif address == '':
                 ErrorMenu.show(self.manager, self.surface, 'Adres IP nie może być pusty')
                 return False
             if not self.client.start(address, 64000):

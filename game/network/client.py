@@ -30,7 +30,7 @@ class Client:
 
     def start(self, address, port):
         try:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.connect(address, port)
             self.connected = True
             self.thread = threading.Thread(target=self.run)
@@ -39,7 +39,7 @@ class Client:
         except Exception as expt:
             self.running = False
             self.connected = False
-            print('[CLIENT ERR]' + str(expt))
+            print('[CLIENT ERR] ' + str(expt))
             return False
 
     def handleMessage(self, msg):

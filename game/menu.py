@@ -173,9 +173,10 @@ class AddressInputMenu:
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == self.back_button:
+                        address = None
                         self.running = False
                         self.__m.menu_start()
-                    if event.ui_element == self.send_button:
+                    elif event.ui_element == self.send_button:
                         address = self.input_line.get_text()
                         self.running = False
             self.__uimanager.process_events(event)

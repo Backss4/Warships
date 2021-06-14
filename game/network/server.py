@@ -14,6 +14,7 @@ starting_messages = [
 class Server:
     def __init__(self):
         threading.Thread.__init__(self)
+        self.start_event = threading.Event()
         self.running = False
         self.sock = None
         self.players = 0
@@ -27,6 +28,7 @@ class Server:
         self.p2_fields = [[FieldStatus.EMPTY for i in range(10)] for i in range(10)]
         self.sock = None
         self.thread = None
+        self.start_event.clear()
 
     def checkIfCanPut(self, board, x, y, length, orientation):
         if self.checkIfShip(board, x, y):
@@ -126,7 +128,7 @@ class Server:
         try:
             print('[SERVER MSG] Serwer startuje')
             self.running = True
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             self.sock.bind(('26.57.228.154', 64000))
             self.sock.setblocking(0)
@@ -134,6 +136,7 @@ class Server:
             inputs = [self.sock]
             outputs = []
             message_queues = {}
+            self.start_event.set()
             while self.running:
                 readable, writable, exceptional = select.select(
                     inputs, outputs, inputs, 1)
