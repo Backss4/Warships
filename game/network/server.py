@@ -128,7 +128,7 @@ class Server:
         try:
             print('[SERVER MSG] Serwer startuje')
             self.running = True
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             self.sock.bind(('26.57.228.154', 64000))
             self.sock.setblocking(0)
@@ -162,7 +162,11 @@ class Server:
                             while data != b'\r' and data != b'\n':
                                 msg += data
                                 data = s.recv(1)
-                            message_queues[s].put('CHAT_MESSAGE:' + msg.decode('utf-8') + '\n')
+                            type, msg = msg.decode('utf-8').split(':', 1)
+                            if type == 'CHAT_MESSAGE':
+                                for soc in outputs:
+                                    message_queues[soc].put(type + ':' + msg + '\n')
+                            # message_queues[s].put('CHAT_MESSAGE:' + msg.decode('utf-8') + '\n')
                         else:
                             self.players -= 1
                             del message_queues[s]
@@ -180,6 +184,7 @@ class Server:
                             s.send(next_msg.encode('utf-8'))
 
                 for s in exceptional:
+                    self.players -= 1
                     del message_queues[s]
                     inputs.remove(s)
                     outputs.remove(s)
@@ -188,6 +193,7 @@ class Server:
                 # print('r: ' + str(readable))
                 # print('w: ' + str(writable))
                 # print('e:' + str(exceptional))
+                print(self.players)
 
             self.sock.close()
         except Exception as expt:

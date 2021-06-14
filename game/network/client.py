@@ -30,7 +30,7 @@ class Client:
 
     def start(self, address, port):
         try:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.connect(address, port)
             self.connected = True
             self.thread = threading.Thread(target=self.run)

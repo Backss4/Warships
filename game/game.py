@@ -61,7 +61,7 @@ class Game:
                         if self.input_line.get_text() == '/dc':
                             self.client.stop()
                         elif self.input_line.get_text() != '':
-                            self.client.add_message_to_queue(self.input_line.get_text() + '\n')
+                            self.client.add_message_to_queue('CHAT_MESSAGE:' + self.input_line.get_text() + '\n')
                         self.input_line.set_text('')
             self.uimanager.process_events(event)
 
