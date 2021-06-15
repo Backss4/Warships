@@ -8,8 +8,7 @@ from game.constants import PlayOption, MenuState
 class Manager:
     def __init__(self, SCREENRECT):
         pygame.init()
-        flags = pygame.NOFRAME | pygame.FULLSCREEN
-        #flags = pygame.NOFRAME
+        flags = pygame.NOFRAME | pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
         self.bestDepth = pygame.display.mode_ok(SCREENRECT.size, flags)
         self.surface = pygame.display.set_mode(SCREENRECT.size, flags, depth=self.bestDepth)
         self.surface.fill((255, 255, 255, 255))
@@ -26,12 +25,12 @@ class Manager:
         self.game = game.Game(self)
 
     def game_start(self, option: int):
-        self.menu_running = False
+        self.menu.running = self.menu_running = False
         self.game.set_mode(option)
         self.game.running = self.game_running = True
 
     def menu_start(self):
-        self.game_running = False
+        self.game.running = self.game_running = False
         self.menu.state = MenuState.MAIN
         self.menu.running = self.menu_running = True
 

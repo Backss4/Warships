@@ -7,7 +7,6 @@ H2 = H // 2
 W_SCALE_FACTOR = W / 1920
 H_SCALE_FACTOR = H / 1080
 
-
 class AnimationState:
     OPEN = 0
     WAIT = 1
@@ -34,6 +33,16 @@ class FieldStatus:
     EMPTY = 0
     SHIP = 1
     DESTROYED = 2
+    MISSED = 3
 
 class EventTypes:
-    CHAT_MESSAGE = 0
+    GAME_EVENT = 'game_event'
+    SERVER_FULL = 0
+    SERVER_MESSAGE = 1
+    CHAT_MESSAGE = 2
+    PUT_SHIP = 3
+    FIELD_MISSED = 4
+    FIELD_HIT = 5
+    REMATCH = 6
+    SHIP_STATUS = 7
+    GAME_STATE = 8

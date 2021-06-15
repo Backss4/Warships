@@ -1,8 +1,10 @@
+import json
 import logging
 import socket, threading, select, pygame, queue, pickle
 import traceback
 
 from game.constants import Orientation, FieldStatus, EventTypes
+from game.utils import count_char
 
 
 class Client:
@@ -23,13 +25,14 @@ class Client:
         self.clearMsgQueue()
 
     def connect(self, address, port):
-        #self.sock.settimeout(3)
+        self.sock.settimeout(3)
         self.sock.connect((address, 64000))
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.sock.setblocking(0)
 
     def start(self, address, port):
         try:
+            self.cleanup()
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.connect(address, port)
             self.connected = True
@@ -44,11 +47,84 @@ class Client:
 
     def handleMessage(self, msg):
         type, msg = msg.split(':', 1)
-        if type == 'CHAT_MESSAGE':
-            event_data = {'user_type': EventTypes.CHAT_MESSAGE,
-                          'msg': msg}
-            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
         print(type)
+        print(msg)
+        if type == 'SERVER_FULL':
+            self.running = False
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.SERVER_FULL,
+                'msg': msg
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+        elif type == 'SERVER_MESSAGE':
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.SERVER_MESSAGE,
+                'msg': msg
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+        elif type == 'CHAT_MESSAGE':
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.CHAT_MESSAGE,
+                'msg': msg
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+        elif type == 'GAME_STATE':
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.GAME_STATE,
+                'msg': msg
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+        elif type == 'SHIP_STATUS':
+            if count_char(msg, '#') == 1:
+                count = msg.split('#', 1)
+                event_data = {
+                    'user_type': 'game_event',
+                    'event_type': EventTypes.SHIP_STATUS,
+                    'count': 2,
+                    'p1': json.loads(count[0]),
+                    'p2': json.loads(count[1])
+                }
+            else:
+                event_data = {
+                    'user_type': 'game_event',
+                    'event_type': EventTypes.SHIP_STATUS,
+                    'count': 1,
+                    'p1': json.loads(msg),
+                }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+        elif type == 'PUT_SHIP':
+            x, y = msg.split('#', 1)
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.PUT_SHIP,
+                'x': int(x),
+                'y': int(y)
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+        elif type == 'FIELD_HIT':
+            x, y, board = msg.split('#', 2)
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.FIELD_HIT,
+                'x': int(x),
+                'y': int(y),
+                'board': int(board)
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+        elif type == 'FIELD_MISSED':
+            x, y, board = msg.split('#', 2)
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.FIELD_MISSED,
+                'x': int(x),
+                'y': int(y),
+                'board': int(board)
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
 
     def run(self):
         last_heartbeat = 0
@@ -80,7 +156,7 @@ class Client:
                     try:
                         next_msg = self.message_queues.get_nowait()
                     except queue.Empty:
-                        pass #nic nie rob jezeli kolejka jest pusta, mowi sie trudno
+                        pass  # nic nie rob jezeli kolejka jest pusta, mowi sie trudno
                     else:
                         s.send(next_msg.encode('utf-8'))
 
