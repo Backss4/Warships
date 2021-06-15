@@ -48,6 +48,7 @@ class Game:
         self.status = 0
         self.font = pygame.font.SysFont(None, 32)
         self.waiting_message = self.font.render('Oczekiwanie na przeciwnika', True, (255, 255, 255))
+        self.game_end_message = self.font.render('Koniec gry', True, (255, 255, 255))
         commands = [
             '/putship x y długość kierunek - ustawianie statku',
             'kierunek:',
@@ -222,6 +223,8 @@ class Game:
                     to_draw = self.font.render('Jednomasztowce: ' + str(self.ship_status[1][x]), True, (255, 255, 255))
                     self.surface.blit(to_draw, (600, 740 + to_draw.get_height() * i))
                     i += 1
+        elif self.status == 3:
+            self.surface.blit(self.game_end_message, (125, 650))
 
         self.uimanager.draw_ui(self.surface)
 
