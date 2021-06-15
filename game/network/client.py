@@ -151,6 +151,12 @@ class Client:
                     else:
                         input.remove(s)
                         output.remove(s)
+                        event_data = {
+                            'user_type': 'game_event',
+                            'event_type': EventTypes.CLIENT_ERROR,
+                            'err': 'Rozłączono z serwerem.'
+                        }
+                        pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
 
                 for s in writable:
                     try:
@@ -164,6 +170,12 @@ class Client:
                     input.remove(s)
                     output.remove(s)
                     self.running = False
+                    event_data = {
+                        'user_type': 'game_event',
+                        'event_type': EventTypes.CLIENT_ERROR,
+                        'err': 'Rozłączono z serwerem.'
+                    }
+                    pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
 
             self.sock.close()
             self.connected = False

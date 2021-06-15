@@ -5,6 +5,7 @@ import select
 import socket
 import threading
 import traceback
+import pygame
 
 from game.constants import Orientation, FieldStatus, EventTypes
 from game.utils import count_char
@@ -476,6 +477,12 @@ class Server:
                             elif p2 == s:
                                 p2 = None
                             s.close()
+                            event_data = {
+                                'user_type': 'game_event',
+                                'event_type': EventTypes.SERVER_ERROR,
+                                'err': 'Drugi klient rozłączył się.'
+                            }
+                            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
 
                 for s in writable:
                     if s in outputs:  # sprawdz czy nie zostal usuniety z listy (połączenie nie zostało zerwane)
@@ -496,6 +503,13 @@ class Server:
                     elif p2 == s:
                         p2 = None
                     s.close()
+                    event_data = {
+                        'user_type': 'game_event',
+                        'event_type': EventTypes.SERVER_ERROR,
+                        'err': 'Drugi klient rozłączył się.'
+                    }
+                    pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
+                    # powiedz grze że powinniśmy wyjść - rozłączenie jakiegoś gracza
 
                 # print('r: ' + str(readable))
                 # print('w: ' + str(writable))

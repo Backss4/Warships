@@ -46,3 +46,5 @@ class EventTypes:
     REMATCH = 6
     SHIP_STATUS = 7
     GAME_STATE = 8
+    SERVER_ERROR = 9
+    CLIENT_ERROR = 10

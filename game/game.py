@@ -100,6 +100,8 @@ class Game:
                         print(self.ship_status)
                     elif event.event_type == EventTypes.GAME_STATE:
                         self.status = int(event.msg)
+                    elif event.event_type == EventTypes.SERVER_ERROR or event.event_type == EventTypes.CLIENT_ERROR:
+                        self.error = event.err
                 elif event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == self.go_back_button:
                         self.manager.menu_start()
