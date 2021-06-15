@@ -43,6 +43,9 @@ class Board:
     def set_field_status(self, x, y, status):
         self.field_status[x][y] = status
 
+    def clear(self):
+        self.field_status = [[FieldStatus.EMPTY for i in range(10)] for i in range(10)]
+
     def draw(self):
         pygame.draw.rect(self.surface, (0, 0, 0), self.board_border, width=1)
         for i in range(10):

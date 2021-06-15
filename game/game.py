@@ -254,6 +254,9 @@ class Game:
     def cleanup(self):
         self.messages.html_text = ''
         self.messages.rebuild()
+        self.board.clear()
+        self.enemy_board.clear()
+        self.status = 0
 
     def run(self):
         self.cleanup()
