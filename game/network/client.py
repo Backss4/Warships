@@ -1,6 +1,7 @@
 import json
 import logging
 import socket, threading, select, pygame, queue, pickle
+import time
 import traceback
 
 from game.constants import Orientation, FieldStatus, EventTypes
@@ -46,6 +47,8 @@ class Client:
             return False
 
     def handleMessage(self, msg):
+        if msg == 'heartbeat':
+            return
         type, msg = msg.split(':', 1)
         print(type)
         print(msg)
@@ -162,7 +165,9 @@ class Client:
                     try:
                         next_msg = self.message_queues.get_nowait()
                     except queue.Empty:
-                        pass  # nic nie rob jezeli kolejka jest pusta, mowi sie trudno
+                        if last_heartbeat + 5 <= time.time():
+                            s.send(bytes('heartbeat\n'.encode('utf-8')))
+                            last_heartbeat = time.time()
                     else:
                         s.send(next_msg.encode('utf-8'))
 
@@ -180,7 +185,12 @@ class Client:
             self.sock.close()
             self.connected = False
         except Exception as expt:
-            traceback.print_tb(expt.__traceback__)
+            event_data = {
+                'user_type': 'game_event',
+                'event_type': EventTypes.CLIENT_ERROR,
+                'err': 'Rozłączono z serwerem.'
+            }
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, event_data))
             print('[CLIENT ERR] ' + str(expt))
         finally:
             self.running = False

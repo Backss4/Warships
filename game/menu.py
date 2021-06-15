@@ -114,7 +114,7 @@ class OptionsMenu:
         self.go_back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.surface.get_width() // 2 - 125, self.surface.get_height() // 2 + 100),
                                       (250, 50)),
-            text='Wróc do menu',
+            text='Wróć do menu',
             manager=self.__uimanager)
 
     def handle_events(self):

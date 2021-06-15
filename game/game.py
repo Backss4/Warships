@@ -17,7 +17,7 @@ class Game:
         self.go_back_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((self.surface.get_width() - 375, 845),
                                       (250, 50)),
-            text='Wróc do menu',
+            text='Wróć do menu',
             object_id='#back',
             manager=self.uimanager)
         self.messages = pygame_gui.elements.UITextBox(
